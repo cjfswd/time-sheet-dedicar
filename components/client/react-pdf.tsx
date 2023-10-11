@@ -190,6 +190,7 @@ export const App = () => {
     const [selectedEmployeeName, setSelectedEmployeeName] = useState<string[]>([])
     const [selectedMonth, setSelectedMonth] = useState('');
     const [inputedYear, setInputedYear] = useState(new Date().getFullYear().toString());
+    const [selectAllChecked, setSelectAllChecked] = useState(false);
     const months = [
         'Janeiro',
         'Fevereiro',
@@ -204,6 +205,17 @@ export const App = () => {
         'Novembro',
         'Dezembro',
     ];
+
+    const handleSelectAllChange = (checkState: boolean) => {
+        if (checkState) {
+            // Select All is checked, add all employees to the selectedEmployeeName array
+            setSelectedEmployeeName([...employeeNameDatabase]);
+        } else {
+            // Select All is unchecked, clear the selectedEmployeeName array
+            setSelectedEmployeeName([]);
+        }
+        setSelectAllChecked(checkState);
+    };
 
     return (<div className="w-full flex flex-col gap-4">
         <Card>
@@ -255,7 +267,15 @@ export const App = () => {
             </CardHeader>
             <CardContent className='flex flex-col gap-1'>
                 {isClient && employeeNameDatabase.map((item, index) => <div key={index}>
-                    {index > 0 && <hr />}
+                    {index == 0 && <div className='flex flex-row gap-2 items-center mb-2'>
+                        <Checkbox
+                            value="Select All"
+                            checked={selectAllChecked}
+                            onCheckedChange={handleSelectAllChange}
+                        />
+                        <span className='w-full'>Selecionar todos</span>
+                    </div>}
+                    <hr className='mt-1'/>
                     <div className='flex flex-row gap-2 items-center mt-1' >
                         <Checkbox value={item} checked={selectedEmployeeName.includes(item)} onCheckedChange={(checkState) => { checkState == true ? setSelectedEmployeeName([...selectedEmployeeName, item]) : setSelectedEmployeeName(selectedEmployeeName.filter(name => name != item)) }
                         } />
