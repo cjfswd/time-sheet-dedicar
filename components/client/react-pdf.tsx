@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, PDFViewer, BlobProvider } from '@react-pdf/renderer';
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,36 +23,101 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 // Importe uma fonte que deseja usar no PDF
 // Font.register({ family: 'Arial', src: 'https://fonts.gstatic.com/s/arial/v15/tssv-0t9qAsmVcPqXSbI5jZ6MT4.woff2' });
 
+Font.register({
+    family: 'Open Sans',
+    fonts: [
+        { src: 'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-regular.ttf' },
+        { src: 'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-600.ttf', fontWeight: 600 }
+    ]
+})
+
 const styles = StyleSheet.create({
     page: {
         padding: 20,
+        fontFamily: 'Open Sans',
+        fontWeight: 10000000000000,
     },
-    header: {
-        fontSize: 14,
+    title: {
+        fontSize: 16,
+
+        marginBottom: 8,
+        textAlign: 'center'
+    },
+    employerTable: {
+        width: '100%',
+        border: '1px solid #000',
+        fontSize: 12,
+        marginBottom: 10,
+        lineHeight: 1.2
+    },
+    company: {
+        width: '70%',
+        padding: 2,
         fontWeight: 'bold',
-        marginBottom: 4,
+        borderRight: '1px solid #000',
+        borderBottom: '1px solid #000'
+    },
+    cnpj: {
+        width: '30%',
+        padding: 2,
+        fontWeight: 'bold',
+        borderRight: '1px solid #000',
+        borderBottom: '1px solid #000',
+    },
+    employeeTable: {
+        width: '100%',
+        border: '1px solid #000',
+        fontSize: 12,
+        marginBottom: 10
+    },
+    employeeName: {
+        width: '100%',
+        padding: 2,
+        fontWeight: 'bold',
+        borderRight: '1px solid #000',
+        borderBottom: '1px solid #000'
+    },
+    employeeOccupation: {
+        width: '100%',
+        padding: 2,
+        fontWeight: 'bold',
+        borderRight: '1px solid #000',
+        borderBottom: '1px solid #000',
     },
     table: {
         width: '100%',
         border: '1px solid #000',
-        fontSize: 10,
+        fontSize: 8,
     },
     row: {
         flexDirection: 'row',
     },
     day: {
-        width: '5%',
+        width: '4%',
+        paddingTop: 4,
+        paddingBottom: 4,
+        borderRight: '1px solid #000',
+        borderBottom: '1px solid #000',
+        textAlign: 'center',
+        lineHeight: 1.75
+    },
+    time: {
+        width: '11%',
+        fontSize: 9,
         borderRight: '1px solid #000',
         borderBottom: '1px solid #000',
         padding: 5,
         textAlign: 'center',
     },
-    cell: {
+    signature: {
+        flexDirection: 'column-reverse',
+        fontSize: 9,
         flex: 1,
         borderRight: '1px solid #000',
         borderBottom: '1px solid #000',
         padding: 5,
         textAlign: 'center',
+
     },
     headerCell: {
         backgroundColor: '#f0f0f0',
@@ -68,21 +133,47 @@ const PontoPDF = ({ funcionarios, mes }: { funcionarios: string[], mes: Date }) 
         <Document>
             {funcionarios.map((funcionario, index) => (
                 <Page key={index} size="A4" style={styles.page}>
-                    <Text style={styles.header}>
-                        Folha de Ponto - {capitalized}
+                    <Text style={styles.title}>
+                        Folha de Ponto - Período: {capitalized}
                     </Text>
-                    <Text style={styles.header}>Funcionário: {funcionario}</Text>
+
+                    <View style={styles.employerTable}>
+                        <View style={styles.row}>
+                            <Text style={styles.company}>Empregador(a): Dedicar - EQUIPE DE APOIO E ASSISTENCIA{"\n"} A PACIENTES LIMITADA - ME.</Text>
+                            <Text style={styles.cnpj}>CNPJ: 10.390.970/0001-02</Text>
+                        </View>
+                    </View>
+                    <View style={styles.employeeTable}>
+                        <View style={styles.row}>
+                            <Text style={styles.employeeName}>Empregado(a): {funcionario}</Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.employeeOccupation}>Cargo: Cuidador de Idosos</Text>
+                        </View>
+                    </View>
                     <View style={styles.table}>
                         <View style={styles.row}>
-                            <Text style={styles.day}>Dia</Text>
-                            <Text style={styles.cell}>Assinatura</Text>
+                            <Text style={styles.day}>{"\n"}Dia</Text>
+                            <Text style={styles.time}>{"\n"}Entrada</Text>
+                            <Text style={styles.time}>Inter.{"\n"}(Almoço)</Text>
+                            <Text style={styles.time}>Fim{"\n"}(Almoço)</Text>
+                            <Text style={styles.time}>Inter.{"\n"}(Jantar)</Text>
+                            <Text style={styles.time}>Fim{"\n"}(Jantar)</Text>
+                            <Text style={styles.time}>{"\n"}Saída</Text>
+                            <Text style={styles.signature}>Assinatura do Empregado{"\n"}(Rubrica)</Text>
                         </View>
                         {Array(31)
                             .fill(null)
                             .map((_, day) => (
                                 <View key={day} style={styles.row}>
-                                    <Text style={styles.day}>{day + 1}</Text>
-                                    <Text style={styles.cell}></Text>
+                                    <Text style={{ ...styles.day, lineHeight: 1.25 }}>{day + 1}</Text>
+                                    <Text style={styles.time}></Text>
+                                    <Text style={styles.time}></Text>
+                                    <Text style={styles.time}></Text>
+                                    <Text style={styles.time}></Text>
+                                    <Text style={styles.time}></Text>
+                                    <Text style={styles.time}></Text>
+                                    <Text style={styles.signature}></Text>
                                 </View>
                             ))}
                     </View>
@@ -96,6 +187,7 @@ export const App = () => {
     const isClient = useIsClient();
     const [inputedEmployeeName, setInputedEmployeeName] = useState('');
     const [employeeNameDatabase, setEmployeeNameDatabase] = useLocalStorage<string[]>("employeeNameDatabase", []);
+    const [selectedEmployeeName, setSelectedEmployeeName] = useState<string[]>([])
     const [selectedMonth, setSelectedMonth] = useState('');
     const [inputedYear, setInputedYear] = useState(new Date().getFullYear().toString());
     const months = [
@@ -126,6 +218,7 @@ export const App = () => {
                         const copy = [...employeeNameDatabase]
                         copy.push(inputedEmployeeName)
                         setEmployeeNameDatabase(copy)
+                        setInputedEmployeeName('')
                     }
                 }}>adicionar nome de funcionário ao banco de dados</Button>
             </CardContent>
@@ -160,24 +253,30 @@ export const App = () => {
                 <CardTitle className='text-xl'>Seleção de funcionários para gerar folha de ponto</CardTitle>
                 <CardDescription>escolha apenas os funcionários que deseja adicionar no próximo documento (folha de ponto)</CardDescription>
             </CardHeader>
-            <CardContent>
-                {isClient && employeeNameDatabase.map((item, index) => <div key={index} className='flex flex-row gap-2 items-center' >
-                    <Checkbox />
-                    <span className='w-full'>{item}</span>
-                    <Button className='w-fit whitespace-nowrap' onClick={() => {
-                        const copy = [...employeeNameDatabase]
-                        copy.splice(index, 1)
-                        setEmployeeNameDatabase(copy)
-                    }}>excluir do banco de dados</Button></div>)}
+            <CardContent className='flex flex-col gap-1'>
+                {isClient && employeeNameDatabase.map((item, index) => <div key={index}>
+                    {index > 0 && <hr />}
+                    <div className='flex flex-row gap-2 items-center mt-1' >
+                        <Checkbox value={item} checked={selectedEmployeeName.includes(item)} onCheckedChange={(checkState) => { checkState == true ? setSelectedEmployeeName([...selectedEmployeeName, item]) : setSelectedEmployeeName(selectedEmployeeName.filter(name => name != item)) }
+                        } />
+                        <span className='w-full'>{item}</span>
+                        <Button className='w-fit whitespace-nowrap' onClick={() => {
+                            setEmployeeNameDatabase([...employeeNameDatabase].filter(savedItem => savedItem != item))
+                            setSelectedEmployeeName([...selectedEmployeeName].filter(selectedItem => selectedItem != item))
+                        }}>excluir do banco de dados</Button>
+                    </div>
+
+                </div>
+                )}
             </CardContent>
         </Card>
         <hr />
-        {isClient && <BlobProvider document={<PontoPDF funcionarios={employeeNameDatabase} mes={new Date(Number(inputedYear), Number(selectedMonth))} />}>
+        {isClient && <BlobProvider document={<PontoPDF funcionarios={selectedEmployeeName} mes={new Date(Number(inputedYear), Number(selectedMonth))} />}>
             {({ blob, url, loading, error }) => {
                 let result
                 if (loading) result = '...carregando'
                 if (error != null) result = 'error'
-                if (url != null) result = <Link href={url} target='_blank' className={cn(buttonVariants())}>ver documento</Link>
+                if (url != null) result = <Button disabled={selectedEmployeeName.length == 0 || selectedMonth == ''} className='p-0'><Link className='w-full h-full flex flex-col items-center justify-center' href={url} target='_blank'>ver documento</Link></Button>
                 return result
             }}
         </BlobProvider>}
